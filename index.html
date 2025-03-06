@@ -15,20 +15,20 @@
         // Create scene, camera, and renderer
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000); // Black background
         document.body.appendChild(renderer.domElement);
 
-        // Create a spinning 3D object
+        // Add gradient background
+        const gradientTexture = new THREE.CanvasTexture(createGradientCanvas());
+        scene.background = gradientTexture;
+
+        // Create a spinning 3D object (Torus Knot)
         const geometry = new THREE.TorusKnotGeometry(5, 1, 100, 16);
         const material = new THREE.MeshStandardMaterial({ color: 0x0077ff, metalness: 0.8, roughness: 0.3 });
         const torusKnot = new THREE.Mesh(geometry, material);
         scene.add(torusKnot);
-
-        // Add lighting
-        const light = new THREE.PointLight(0xffffff, 1, 100);
-        light.position.set(10, 10, 10);
-        scene.add(light);
 
         // Add GitHub username text
         const loader = new THREE.FontLoader();
@@ -48,19 +48,76 @@
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
             textMesh.position.set(-8, 0, 0); // Position the text
             scene.add(textMesh);
+
+            // Add glowing effect to text
+            const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xff0077, transparent: true, opacity: 0.5 });
+            const glowMesh = new THREE.Mesh(textGeometry, glowMaterial);
+            glowMesh.position.set(-8, 0, 0);
+            glowMesh.scale.set(1.1, 1.1, 1.1); // Slightly larger for glow effect
+            scene.add(glowMesh);
         });
+
+        // Add particle effects
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50; // Random positions
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Add lighting
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(10, 10, 10);
+        scene.add(light);
 
         // Camera position
         camera.position.z = 15;
 
+        // Mouse controls for camera rotation
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
+
+            // Rotate torus knot
             torusKnot.rotation.x += 0.01;
             torusKnot.rotation.y += 0.01;
+
+            // Rotate camera based on mouse movement
+            camera.position.x += (mouseX * 10 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 10 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            // Render the scene
             renderer.render(scene, camera);
         }
         animate();
+
+        // Function to create gradient background
+        function createGradientCanvas() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            gradient.addColorStop(0, '#000000'); // Black at the center
+            gradient.addColorStop(1, '#1a1a1a'); // Dark gray at the edges
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 256, 256);
+
+            return canvas;
+        }
     </script>
 </body>
 </html>
