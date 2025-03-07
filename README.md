@@ -55,4 +55,4 @@ This project uses **Three.js** to create an interactive 3D visualization of my G
    npm start
    ```
 
-- **Three.js GitHub Profile Visualization**: [https://juniorcarti.github.io/threejs-github-visualization](https://juniorcarti.github.io/threejs-github-visualization)
+- **Three.js GitHub Profile Visualization**:https://juniorcarti.github.io/
