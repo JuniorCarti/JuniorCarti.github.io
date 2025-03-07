@@ -1,10 +1,8 @@
 1. **3D Portfolio Visualization**: A Python-based 3D visualization of a stock portfolio.
 2. **Three.js GitHub Profile Visualization**: A 3D interactive visualization of my GitHub profile using Three.js.
 
----
 
 ## Projects
-
 ### 1. 3D Portfolio Visualization
 This project visualizes a portfolio of stocks in 3D space, with the following axes:
 - **X-axis**: Expected Return
